@@ -53,7 +53,39 @@
 9. 游戏结束的弹出界面，暂停和重新开始游戏（窝窝头）
 10. 任何新发现的任务可以交给ionic和窝窝头做
 
-## 任务难点和现在想到的解决方案
+### 任务难点和现在想到的解决方案
 1. 吸附：目前想到的是：设计每个角点都有一个吸附距离的判定，符合距离要求就让鼠标拿的块向这边靠近
 2. 旋转：用快捷键旋转边，给边编号，每按一次就换一个边对过去。松手确认。
 3. 360度判定：给每个角都做一块物理体，可重合的，标明这个角度是多少。如果互相进入，就算它们的总和，总数加起来=360就算消除。
+
+## 编写风格指南
+[https://docs.godotengine.org/zh-cn/4.x/tutorials/scripting/gdscript/gdscript_styleguide.html]
+* 文件名采用蛇形命名，类和节点采用驼峰命名，函数、变量、信号采用蛇形命名，常量采用蛇形命名大写
+* 代码顺序
+```
+01. @tool
+02. class_name
+03. extends
+04. # docstring
+
+05. signals
+06. enums
+07. constants
+08. @export variables
+09. public variables
+10. private variables
+11. @onready variables
+
+12. optional built-in virtual _init method
+13. optional built-in virtual _enter_tree() method
+14. built-in virtual _ready method
+15. remaining built-in virtual methods
+16. public methods
+17. private methods
+18. subclasses
+```
+1. 先写信号和属性，然后再写方法。
+2. 先写公共成员，然后再写私有成员。
+3. 先写虚函数回调，然后再写类的接口。
+4. 先写对象的构造函数和初始化函数 _init 和 _ready ，然后再写修改对象的函数。
+

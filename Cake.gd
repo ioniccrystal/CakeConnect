@@ -1,11 +1,12 @@
 extends PanelContainer
-@onready var cake = $"."
-@onready var collision_shape_2d = $Area2D/CollisionShape2D
 
 var dragging = false
 var rotating = false
 var container_position: Vector2 = Vector2.ZERO
 var container_size: Vector2 = Vector2.ZERO
+
+@onready var cake = $"."
+@onready var collision_shape_2d = $Area2D/CollisionShape2D
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -20,7 +21,7 @@ func update_collision_shape():
 		# 设置碰撞形状的尺寸匹配PanelContainer的尺寸
 		shape.extents = size / 2
 
-func _process(delta):
+func _process(_delta):
 	if dragging:
 		container_position = get_parent().global_position
 		container_size = get_parent().size
