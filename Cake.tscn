@@ -1,9 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://dyul5j6bfjugu"]
 
 [ext_resource type="Script" path="res://Cake.gd" id="1_8616s"]
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_6qqsr"]
-size = Vector2(50, 50)
+[ext_resource type="Texture2D" uid="uid://duk1cxxcvblrw" path="res://assets/Triangle.png" id="2_7ifhq"]
 
 [node name="Cake" type="PanelContainer"]
 custom_minimum_size = Vector2(50, 50)
@@ -14,16 +12,16 @@ size_flags_horizontal = 4
 size_flags_vertical = 4
 script = ExtResource("1_8616s")
 
-[node name="ColorRect" type="ColorRect" parent="."]
-layout_mode = 2
-mouse_filter = 2
-color = Color(0.183279, 0.680796, 0.649514, 1)
-
 [node name="Area2D" type="Area2D" parent="."]
 input_pickable = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 position = Vector2(25, 25)
-shape = SubResource("RectangleShape2D_6qqsr")
+debug_color = Color(0.922421, 0.201833, 0.485053, 0.42)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(25, 25)
+scale = Vector2(0.1, 0.1)
+texture = ExtResource("2_7ifhq")
 
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]

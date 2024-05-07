@@ -1,25 +1,38 @@
 extends PanelContainer
+class_name  Cake
 
 var dragging = false
 var rotating = false
 var container_position: Vector2 = Vector2.ZERO
 var container_size: Vector2 = Vector2.ZERO
-
-@onready var cake = $"."
+var shapes = {
+	"square": ["res://assets/Square.png", [Vector2(0, 0), Vector2(50, 0), Vector2(50, 50), Vector2(0, 50)]],
+	"triangle": ["res://assets/Triangle.png", [Vector2(25, 0), Vector2(50, 50), Vector2(0, 50)]],
+}
 @onready var collision_shape_2d = $Area2D/CollisionShape2D
+@onready var sprite_2d = $Sprite2D
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	set_mouse_filter(MOUSE_FILTER_STOP)
 	#update_collision_shape()
-	# 大小改变时更新形状
 	connect("resized", Callable(self, "update_collision_shape"))
+
+func set_shape(shape_key):
+	var data = shapes[shape_key]
+	sprite_2d.texture = load(data[0])
+	var shape2D = ConvexPolygonShape2D.new()
+	shape2D.set_point_cloud(data[1])
+	collision_shape_2d.shape = shape2D
+	collision_shape_2d.position = collision_shape_2d.position - size/2
+	print(collision_shape_2d)
 	
 func update_collision_shape():
-	var shape = collision_shape_2d.shape
-	if shape and shape is RectangleShape2D:
+	var shape2D = collision_shape_2d.shape
+	if shape2D and shape2D is RectangleShape2D:
 		# 设置碰撞形状的尺寸匹配PanelContainer的尺寸
-		shape.extents = size / 2
+		shape2D.extents = size / 2
 
 func _process(_delta):
 	if dragging:

@@ -1,4 +1,4 @@
-extends PanelContainer
+extends Control
 @onready var area_2d = $Area2D
 @onready var collision_shape_2d = $Area2D/CollisionShape2D
 
@@ -12,6 +12,7 @@ func update_collision_shape():
 	var shape = collision_shape_2d.shape
 	if shape and shape is RectangleShape2D:
 		shape.extents = size / 2
+	collision_shape_2d.position = size/2
 	$CakeContainer.size = size
 
 func add_cake(cake):

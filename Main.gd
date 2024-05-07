@@ -12,3 +12,4 @@ func _ready():
 func init_cake():
 	var cake = cake_scene.instantiate()
 	plate.add_cake(cake)
+	cake.set_shape("square")
