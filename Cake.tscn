@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://dyul5j6bfjugu"]
 
 [ext_resource type="Script" path="res://Cake.gd" id="1_8616s"]
-[ext_resource type="Texture2D" uid="uid://duk1cxxcvblrw" path="res://assets/Triangle.png" id="2_7ifhq"]
+[ext_resource type="Texture2D" uid="uid://cikelrka8ag26" path="res://assets/triangle_with_transparent_border.png" id="3_trcwx"]
 
 [node name="Cake" type="PanelContainer"]
 custom_minimum_size = Vector2(50, 50)
@@ -22,6 +22,6 @@ debug_color = Color(0.922421, 0.201833, 0.485053, 0.42)
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(25, 25)
 scale = Vector2(0.1, 0.1)
-texture = ExtResource("2_7ifhq")
+texture = ExtResource("3_trcwx")
 
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]

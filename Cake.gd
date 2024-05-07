@@ -6,9 +6,10 @@ var rotating = false
 var container_position: Vector2 = Vector2.ZERO
 var container_size: Vector2 = Vector2.ZERO
 var shapes = {
-	"square": ["res://assets/Square.png", [Vector2(0, 0), Vector2(50, 0), Vector2(50, 50), Vector2(0, 50)]],
-	"triangle": ["res://assets/Triangle.png", [Vector2(25, 0), Vector2(50, 50), Vector2(0, 50)]],
+	"square": ["res://assets/square_with_transparent_border.png", [Vector2(0, 0), Vector2(50, 0), Vector2(50, 50), Vector2(0, 50)]],
+	"triangle": ["res://assets/triangle_with_transparent_border.png", [Vector2(25, 0), Vector2(50, 50), Vector2(0, 50)]],
 }
+var highlight_material = preload("res://assets/cake_highlight_border.tres")
 @onready var collision_shape_2d = $Area2D/CollisionShape2D
 @onready var sprite_2d = $Sprite2D
 
@@ -52,8 +53,10 @@ func _on_gui_input(event):
 		if event.button_index == 1:
 			if event.button_mask == 1:
 				dragging = true
+				sprite_2d.material = highlight_material
 			elif event.button_mask == 0:
 				dragging = false
+				sprite_2d.material = null
 		elif dragging and event.button_index == MOUSE_BUTTON_WHEEL_UP or event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			# 处理鼠标滚轮旋转
 			var rotate_dir = -1 if event.button_index == MOUSE_BUTTON_WHEEL_UP else 1

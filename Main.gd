@@ -10,6 +10,9 @@ func _ready():
 	init_cake()
 
 func init_cake():
-	var cake = cake_scene.instantiate()
-	plate.add_cake(cake)
-	cake.set_shape("square")
+	var cake1 = cake_scene.instantiate()
+	plate.add_cake(cake1)
+	cake1.set_shape("triangle")
+	var cake2 = cake_scene.instantiate()
+	plate.add_cake(cake2)
+	cake2.set_shape("square")
