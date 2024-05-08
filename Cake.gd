@@ -13,6 +13,7 @@ var rotating = false
 var container_position: Vector2 = Vector2.ZERO
 var container_size: Vector2 = Vector2.ZERO
 var rotation_speed = PI/6 # 根据蛋糕形状确定
+var plate = null
 
 var shape_points = {
 	Shape.SQUARE: [Vector2(0, 0), Vector2(50, 0), Vector2(50, 50), Vector2(0, 50)],
@@ -35,6 +36,8 @@ var highlight_material = preload("res://assets/cake_highlight_border.tres")
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	set_mouse_filter(MOUSE_FILTER_STOP)
+	set_focus_mode(Control.FOCUS_CLICK)
+	plate = get_node_or_null("/root/Main/Background/MarginContainer/VBoxContainer/Plate") as Plate  # 根据你的场景树结构修改路径
 	#update_collision_shape()
 	connect("resized", Callable(self, "update_collision_shape"))
 
@@ -52,6 +55,8 @@ func set_shape(shape_key):
 	collision_shape_2d.position = collision_shape_2d.position
 	#rotation_speed = PI / 2 if shape_key == "square" else PI / 3
 
+func in_plate():
+	return get_parent().get_parent() is Plate
 
 func draw_outline(color):
 	var full_points = shape_points[shape].duplicate()
@@ -83,17 +88,22 @@ func _process(_delta):
 			new_position.x = clamp(new_position.x, container_position.x, container_position.x + container_size.x - size.x)
 			new_position.y = clamp(new_position.y, container_position.y, container_position.y + container_size.y - size.y)
 		global_position = new_position
-		check_snap()
+		
 
 
 func _on_gui_input(event):
 	if event is InputEventMouseButton:
 		if event.button_index == 1:
+			print(event.button_mask)
 			if event.button_mask == 1: # and status == Status.IDLE
 				status = Status.DRAGGING
+				z_index = 100
 				queue_redraw()
 			elif event.button_mask == 0 and status == Status.DRAGGING:
-				try_to_transfer_node()
+				if not in_plate():
+					try_to_transfer_node()
+				check_snap()
+				snap()
 				status = Status.FIXED
 				queue_redraw()
 		elif status == Status.DRAGGING \
@@ -104,14 +114,12 @@ func _on_gui_input(event):
 
 func try_to_transfer_node():
 	var mouse_pos = get_global_mouse_position()
-	var plate_node = get_node_or_null("/root/Main/ColorRect/MarginContainer/VBoxContainer/Plate") as Plate  # 根据你的场景树结构修改路径
-	if plate_node and plate_node.get_rect().has_point(mouse_pos):
+	if plate and plate.get_rect().has_point(mouse_pos):
 		get_parent().remove_child(self)
-		plate_node.add_child(self)
+		plate.add_cake(self)
 		# 调整本地坐标以适应新的父节点
-		position = plate_node.get_local_mouse_position() - size * 0.5
-		snap()
-		(plate_node as Plate).add_cake(self)
+		position = plate.get_local_mouse_position() - size * 0.5
+		
 
 func _input(event):
 	if event is InputEventKey and status == Status.DRAGGING:
@@ -120,11 +128,11 @@ func _input(event):
 				start_rotate(-1)
 			elif event.keycode == KEY_D:
 				start_rotate(1)
-				
+
+
 func start_rotate(rotate_dir):
 	if not rotating:
 		var end_rotation =  rotation + rotate_dir * rotation_speed
-		print(end_rotation)
 		var tween = get_tree().create_tween()
 		rotating = true
 		tween.tween_property(self, "rotation", end_rotation, 0.2)
@@ -142,7 +150,6 @@ func check_snap():
 		min_distance = INF
 		best_match = null
 		# 获取盘子上所有蛋糕
-		var plate = get_node_or_null("/root/Main/ColorRect/MarginContainer/VBoxContainer/Plate") as Plate
 		var cakes = plate.cakes_on_plate
 		for cake in cakes:
 			# 获取其他蛋糕和当前蛋糕的polygon

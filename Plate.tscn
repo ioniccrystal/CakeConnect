@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://cebuqlh4ennog"]
+[gd_scene load_steps=4 format=3 uid="uid://cebuqlh4ennog"]
 
 [ext_resource type="Script" path="res://Plate.gd" id="1_hl0ua"]
+[ext_resource type="Texture2D" uid="uid://wn7tpgqo3gld" path="res://assets/yellow_panel.png" id="2_ddcgr"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_es0da"]
 size = Vector2(4.40625, 5)
@@ -14,11 +15,20 @@ anchor_right = 0.5
 anchor_bottom = 0.5
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 1
 script = ExtResource("1_hl0ua")
+
+[node name="NinePatchRect" type="NinePatchRect" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("2_ddcgr")
+region_rect = Rect2(5.8934, 5.51482, 89.5353, 89.5353)
 
 [node name="CakeContainer" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 0
+mouse_filter = 1
 
 [node name="Area2D" type="Area2D" parent="."]
 input_pickable = false
