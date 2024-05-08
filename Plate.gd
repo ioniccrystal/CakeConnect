@@ -1,6 +1,8 @@
 extends Control
 class_name Plate
+
 var cakes_on_plate = []
+
 @onready var area_2d = $Area2D
 @onready var collision_shape_2d = $Area2D/CollisionShape2D
 
@@ -18,7 +20,4 @@ func update_collision_shape():
 	$CakeContainer.size = size
 
 func add_cake(cake):
-	$CakeContainer.add_child(cake)
 	cakes_on_plate.append(cake)
-	# set a random position
-	cake.position = Vector2(randf_range(0, size.x), randf_range(0, size.y))

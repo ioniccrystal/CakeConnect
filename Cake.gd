@@ -30,7 +30,6 @@ var shape_points = {
 }
 var highlight_material = preload("res://assets/cake_highlight_border.tres")
 @onready var collision_shape_2d = $Area2D/CollisionShape2D
-@onready var sprite_2d = $Sprite2D
 @onready var polygon_2d = $Polygon2D
 
 # Called when the node enters the scene tree for the first time.
@@ -77,11 +76,12 @@ func _process(_delta):
 	if status == Status.DRAGGING:
 		container_position = get_parent().global_position
 		container_size = get_parent().size
-		# 限定不超出屏幕
+		# 限定不超出盘子范围
 		var mouse_pos = get_global_mouse_position()
 		var new_position = mouse_pos - size * 0.5
-		new_position.x = clamp(new_position.x, container_position.x, container_position.x + container_size.x - size.x)
-		new_position.y = clamp(new_position.y, container_position.y, container_position.y + container_size.y - size.y)
+		if get_parent().get_parent() is Plate:
+			new_position.x = clamp(new_position.x, container_position.x, container_position.x + container_size.x - size.x)
+			new_position.y = clamp(new_position.y, container_position.y, container_position.y + container_size.y - size.y)
 		global_position = new_position
 		check_snap()
 
@@ -92,10 +92,8 @@ func _on_gui_input(event):
 			if event.button_mask == 1: # and status == Status.IDLE
 				status = Status.DRAGGING
 				queue_redraw()
-				sprite_2d.material = highlight_material
 			elif event.button_mask == 0 and status == Status.DRAGGING:
-				sprite_2d.material = null
-				snap()
+				try_to_transfer_node()
 				status = Status.FIXED
 				queue_redraw()
 		elif status == Status.DRAGGING \
@@ -103,6 +101,17 @@ func _on_gui_input(event):
 			# 处理鼠标滚轮旋转
 			var rotate_dir = -1 if event.button_index == MOUSE_BUTTON_WHEEL_UP else 1
 			start_rotate(rotate_dir)
+
+func try_to_transfer_node():
+	var mouse_pos = get_global_mouse_position()
+	var plate_node = get_node_or_null("/root/Main/ColorRect/MarginContainer/VBoxContainer/Plate") as Plate  # 根据你的场景树结构修改路径
+	if plate_node and plate_node.get_rect().has_point(mouse_pos):
+		get_parent().remove_child(self)
+		plate_node.add_child(self)
+		# 调整本地坐标以适应新的父节点
+		position = plate_node.get_local_mouse_position() - size * 0.5
+		snap()
+		(plate_node as Plate).add_cake(self)
 
 func _input(event):
 	if event is InputEventKey and status == Status.DRAGGING:
@@ -133,7 +142,8 @@ func check_snap():
 		min_distance = INF
 		best_match = null
 		# 获取盘子上所有蛋糕
-		var cakes = (get_parent().get_parent() as Plate).cakes_on_plate
+		var plate = get_node_or_null("/root/Main/ColorRect/MarginContainer/VBoxContainer/Plate") as Plate
+		var cakes = plate.cakes_on_plate
 		for cake in cakes:
 			# 获取其他蛋糕和当前蛋糕的polygon
 			if cake == self:
@@ -179,6 +189,7 @@ func snap():
 			## 方向相反,移动使线段1的端点与线段2的另一端点重合
 			move_direction = segment1[0]- segment2[1]
 		position += move_direction
+
 
 # 计算两个向量的外积
 func is_parallel(v1: Vector2, v2: Vector2) -> bool:

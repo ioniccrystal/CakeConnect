@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://cwoqea70yidlt"]
+
+[ext_resource type="Script" path="res://Conveyer.gd" id="1_k4ghc"]
+
+[node name="Conveyer" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_k4ghc")
+
+[node name="CakeContainer" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0

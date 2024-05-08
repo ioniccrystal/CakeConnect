@@ -1,9 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://dyul5j6bfjugu"]
+[gd_scene load_steps=2 format=3 uid="uid://dyul5j6bfjugu"]
 
 [ext_resource type="Script" path="res://Cake.gd" id="1_8616s"]
-
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_1eh2y"]
-load_path = "res://.godot/imported/triangle_with_transparent_border.png-c2410ec86431db8f6b326511ef05fabf.ctex"
 
 [node name="Cake" type="Control"]
 custom_minimum_size = Vector2(50, 50)
@@ -24,12 +21,6 @@ input_pickable = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 debug_color = Color(0.922421, 0.201833, 0.485053, 0.42)
-
-[node name="Sprite2D" type="Sprite2D" parent="."]
-visible = false
-position = Vector2(25, 25)
-scale = Vector2(0.1, 0.1)
-texture = SubResource("CompressedTexture2D_1eh2y")
 
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
 [connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]

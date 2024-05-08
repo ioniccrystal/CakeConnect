@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://cmioogghwqlka"]
+[gd_scene load_steps=4 format=3 uid="uid://cmioogghwqlka"]
 
 [ext_resource type="PackedScene" uid="uid://cebuqlh4ennog" path="res://Plate.tscn" id="1_007sc"]
 [ext_resource type="Script" path="res://Main.gd" id="1_earrm"]
+[ext_resource type="PackedScene" uid="uid://cwoqea70yidlt" path="res://Conveyer.tscn" id="2_fp8yj"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_earrm")
@@ -28,8 +29,7 @@ theme_override_constants/margin_bottom = 20
 layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="ConveyerContainer" type="HBoxContainer" parent="ColorRect/MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 120)
+[node name="Conveyer" parent="ColorRect/MarginContainer/VBoxContainer" instance=ExtResource("2_fp8yj")]
 layout_mode = 2
 size_flags_vertical = 3
 
