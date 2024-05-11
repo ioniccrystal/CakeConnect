@@ -1,0 +1,22 @@
+[gd_scene load_steps=3 format=3 uid="uid://cwoqea70yidlt"]
+
+[ext_resource type="Script" path="res://Conveyer.gd" id="1_k4ghc"]
+[ext_resource type="PackedScene" uid="uid://cq3ckpa2c4gdy" path="res://ConveyerAni.tscn" id="3_x4u4c"]
+
+[node name="Conveyer" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_k4ghc")
+
+[node name="ConveyerAni" parent="." instance=ExtResource("3_x4u4c")]
+position = Vector2(273, 94)
+scale = Vector2(0.56, 0.56)
+
+[node name="CakeContainer" type="Control" parent="."]
+anchors_preset = 0
+
+[node name="Timer2" type="Timer" parent="."]
+wait_time = 4.0
+autostart = true
+
+[connection signal="timeout" from="Timer2" to="." method="_on_timer_2_timeout"]

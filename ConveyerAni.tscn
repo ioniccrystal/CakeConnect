@@ -1,0 +1,63 @@
+[gd_scene load_steps=10 format=3 uid="uid://cq3ckpa2c4gdy"]
+
+[ext_resource type="Script" path="res://StaticBody2D.gd" id="1_s77fj"]
+[ext_resource type="Texture2D" uid="uid://0efluqo8fnn5" path="res://assets/conveyor/1.png" id="1_tisha"]
+[ext_resource type="Texture2D" uid="uid://cm56x75c1a40r" path="res://assets/conveyor/2.png" id="2_1s5ty"]
+[ext_resource type="Texture2D" uid="uid://cu0idoyhxk1o8" path="res://assets/conveyor/3.png" id="3_3h204"]
+[ext_resource type="Texture2D" uid="uid://d3hqw53icko1b" path="res://assets/conveyor/4.png" id="4_ywu0w"]
+[ext_resource type="Texture2D" uid="uid://cdgxvjt1rq0xe" path="res://assets/conveyor/5.png" id="5_lhfeh"]
+[ext_resource type="Texture2D" uid="uid://c1p5e2lr83xij" path="res://assets/conveyor/6.png" id="6_y8mls"]
+[ext_resource type="Texture2D" uid="uid://lvqslmbgfbll" path="res://assets/conveyor/7.png" id="7_bjk3h"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_sxp5j"]
+animations = [{
+"frames": [],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_tisha")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_1s5ty")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_3h204")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_ywu0w")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_lhfeh")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_y8mls")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_bjk3h")
+}],
+"loop": false,
+"name": &"move",
+"speed": 25.0
+}]
+
+[node name="ConveyerAni" type="Node2D"]
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 4.0
+autostart = true
+
+[node name="Conveyer" type="StaticBody2D" parent="."]
+script = ExtResource("1_s77fj")
+
+[node name="ani" type="AnimatedSprite2D" parent="Conveyer"]
+sprite_frames = SubResource("SpriteFrames_sxp5j")
+animation = &"move"
+frame = 6
+frame_progress = 1.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Conveyer"]
+
+[connection signal="timeout" from="Timer" to="Conveyer" method="_on_timer_timeout"]
