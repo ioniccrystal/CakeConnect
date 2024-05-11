@@ -1,6 +1,6 @@
 extends RigidBody2D
 class_name Cake3
-
+#zhufree的部分
 enum Status {
 	FIXED, DRAGGING, IDLE
 }
@@ -14,7 +14,6 @@ var container_position: Vector2 = Vector2.ZERO
 var container_size: Vector2 = Vector2.ZERO
 var rotation_speed = PI/6 # 根据蛋糕形状确定
 var plate = null
-var points = []
 
 var shape_points = {
 	Shape.SQUARE: [Vector2(0, 0), Vector2(50, 0), Vector2(50, 50), Vector2(0, 50)],
@@ -30,6 +29,15 @@ var shape_points = {
 		Vector2(0, 43.3)
 	]
 }
+
+#ionic的部分
+var points = []
+
+#瓜的部分
+var shape_values:Array = [Shape.SQUARE,Shape.TRIANGLE,Shape.DIAMOND]
+var random_index = randi()%3
+var random_shape_value = shape_values[random_index]
+
 #var highlight_material = preload("res://assets/cake_highlight_border.tres")
 @onready var collision_shape_2d = find_child("CollisionShape2D")
 @onready var polygon_2d = find_child("Polygon2D")
@@ -86,44 +94,15 @@ func _draw():
 #func update_collision_shape():
 	#var shape2D = collision_shape_2d.shape
 	#if shape2D and shape2D is RectangleShape2D:
-		## 设置碰撞形状的尺寸匹配PanelContainer的尺寸
+		# 设置碰撞形状的尺寸匹配PanelContainer的尺寸
 		#shape2D.extents = size / 2
 
-func _process(_delta):
+func _physics_process(_delta):
 	if status == Status.DRAGGING:
-		#container_position = get_parent().global_position
-		#container_size = get_parent().size
-		# 限定不超出盘子范围
 		var mouse_pos = get_global_mouse_position()
-		#var new_position = mouse_pos - size * 0.5
-		#if get_parent().get_parent() is Plate:
-			#new_position.x = clamp(new_position.x, container_position.x, container_position.x + container_size.x - size.x)
-			#new_position.y = clamp(new_position.y, container_position.y, container_position.y + container_size.y - size.y)
 		var velocity = mouse_pos - global_position
 		move_and_collide(velocity)
 
-
-#func _on_gui_input(_viewport,event,_shapeinx):
-	#print(event)
-	#if event is InputEventMouseButton:
-		#if event.button_index == 1:
-			#print(event.button_mask)
-			#if event.button_mask == 1: # and status == Status.IDLE
-				#status = Status.DRAGGING
-				#z_index = 100
-				##queue_redraw()
-			#elif event.button_mask == 0 and status == Status.DRAGGING:
-				##if not in_plate():
-					##try_to_transfer_node()
-				#check_snap()
-				#snap()
-				#status = Status.FIXED
-				#queue_redraw()
-		#elif status == Status.DRAGGING \
-			#and event.button_index == MOUSE_BUTTON_WHEEL_UP or event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			## 处理鼠标滚轮旋转
-			#var rotate_dir = -1 if event.button_index == MOUSE_BUTTON_WHEEL_UP else 1
-			#start_rotate(rotate_dir)
 
 func try_to_transfer_node():
 	var mouse_pos = get_global_mouse_position()

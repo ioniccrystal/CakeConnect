@@ -49,7 +49,7 @@ animations = [{
 wait_time = 4.0
 autostart = true
 
-[node name="Conveyer" type="StaticBody2D" parent="."]
+[node name="Conveyer" type="Node2D" parent="."]
 script = ExtResource("1_s77fj")
 
 [node name="ani" type="AnimatedSprite2D" parent="Conveyer"]
@@ -57,7 +57,5 @@ sprite_frames = SubResource("SpriteFrames_sxp5j")
 animation = &"move"
 frame = 6
 frame_progress = 1.0
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Conveyer"]
 
 [connection signal="timeout" from="Timer" to="Conveyer" method="_on_timer_timeout"]

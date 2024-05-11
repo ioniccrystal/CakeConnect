@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Cake3.gd" id="1_d5236"]
 
-[node name="Cake" type="RigidBody2D"]
+[node name="Cake" type="RigidBody2D" groups=["cake"]]
 input_pickable = true
 gravity_scale = 0.0
 can_sleep = false

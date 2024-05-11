@@ -13,7 +13,7 @@ func update_heart_num():
 	heart.update_heart(current_heart)
 	pass
 	
-func change_heart():
+func change_heart(_body):#ionic改成body了
 	current_heart = current_heart-1
 	update_heart_num()
 
