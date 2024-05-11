@@ -1,9 +1,16 @@
-[gd_scene load_steps=5 format=3 uid="uid://cmioogghwqlka"]
+[gd_scene load_steps=8 format=3 uid="uid://cmioogghwqlka"]
 
 [ext_resource type="PackedScene" uid="uid://cebuqlh4ennog" path="res://Plate.tscn" id="1_007sc"]
 [ext_resource type="Script" path="res://Main.gd" id="1_earrm"]
 [ext_resource type="Texture2D" uid="uid://r44baekdlcqs" path="res://assets/bg3.png" id="2_axu1o"]
 [ext_resource type="PackedScene" uid="uid://cwoqea70yidlt" path="res://Conveyer.tscn" id="2_fp8yj"]
+[ext_resource type="Texture2D" uid="uid://ctul8s32wbuob" path="res://icon.svg" id="5_q0mts"]
+[ext_resource type="Shader" path="res://Cake.gdshader" id="5_usthf"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ps5ee"]
+shader = ExtResource("5_usthf")
+shader_parameter/width = 2.0
+shader_parameter/color = Color(1, 0, 0, 1)
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_earrm")
@@ -39,3 +46,9 @@ size_flags_vertical = 3
 size_flags_stretch_ratio = 4.0
 
 [node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="Icon" type="Sprite2D" parent="."]
+z_index = 200
+material = SubResource("ShaderMaterial_ps5ee")
+position = Vector2(279, 91)
+texture = ExtResource("5_q0mts")

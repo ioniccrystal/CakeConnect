@@ -1,5 +1,5 @@
-extends Control
-class_name  Cake
+extends RigidBody2D
+class_name Cake2
 
 enum Status {
 	FIXED, DRAGGING, IDLE
@@ -35,20 +35,20 @@ var highlight_material = preload("res://assets/cake_highlight_border.tres")
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	set_mouse_filter(MOUSE_FILTER_STOP)
-	set_focus_mode(Control.FOCUS_CLICK)
+	#set_mouse_filter(MOUSE_FILTER_STOP)
+	#set_focus_mode(Control.FOCUS_CLICK)
 	plate = get_node_or_null("/root/Main/Background/MarginContainer/VBoxContainer/Plate") as Plate  # 根据你的场景树结构修改路径
 	#update_collision_shape()
-	connect("resized", Callable(self, "update_collision_shape"))
+	#connect("resized", Callable(self, "update_collision_shape"))
 
 func set_shape(shape_key):
 	shape = shape_key
 	var points = shape_points[shape_key]
 	polygon_2d.polygon = points
-	if shape_key == Shape.DIAMOND:
-		size = Vector2(50, 100)
-	else:
-		size = Vector2(50, 50)
+	#if shape_key == Shape.DIAMOND:
+		#size = Vector2(50, 100)
+	#else:
+		#size = Vector2(50, 50)
 	var shape2D = ConvexPolygonShape2D.new()
 	shape2D.set_point_cloud(points)
 	collision_shape_2d.shape = shape2D
@@ -71,27 +71,28 @@ func _draw():
 	else:
 		draw_outline(Color.TRANSPARENT)
 		
-func update_collision_shape():
-	var shape2D = collision_shape_2d.shape
-	if shape2D and shape2D is RectangleShape2D:
-		# 设置碰撞形状的尺寸匹配PanelContainer的尺寸
-		shape2D.extents = size / 2
+#func update_collision_shape():
+	#var shape2D = collision_shape_2d.shape
+	#if shape2D and shape2D is RectangleShape2D:
+		## 设置碰撞形状的尺寸匹配PanelContainer的尺寸
+		#shape2D.extents = size / 2
 
 func _process(_delta):
 	if status == Status.DRAGGING:
-		container_position = get_parent().global_position
-		container_size = get_parent().size
+		#container_position = get_parent().global_position
+		#container_size = get_parent().size
 		# 限定不超出盘子范围
 		var mouse_pos = get_global_mouse_position()
-		var new_position = mouse_pos - size * 0.5
-		if get_parent().get_parent() is Plate:
-			new_position.x = clamp(new_position.x, container_position.x, container_position.x + container_size.x - size.x)
-			new_position.y = clamp(new_position.y, container_position.y, container_position.y + container_size.y - size.y)
-		global_position = new_position
+		#var new_position = mouse_pos - size * 0.5
+		#if get_parent().get_parent() is Plate:
+			#new_position.x = clamp(new_position.x, container_position.x, container_position.x + container_size.x - size.x)
+			#new_position.y = clamp(new_position.y, container_position.y, container_position.y + container_size.y - size.y)
+		global_position.move_toward(mouse_pos,10000)
 		
 
 
-func _on_gui_input(event):
+func _on_gui_input(_viewport,event,_shapeinx):
+	print("input")
 	if event is InputEventMouseButton:
 		if event.button_index == 1:
 			print(event.button_mask)
@@ -100,8 +101,8 @@ func _on_gui_input(event):
 				z_index = 100
 				queue_redraw()
 			elif event.button_mask == 0 and status == Status.DRAGGING:
-				if not in_plate():
-					try_to_transfer_node()
+				#if not in_plate():
+					#try_to_transfer_node()
 				check_snap()
 				snap()
 				status = Status.FIXED
@@ -118,7 +119,7 @@ func try_to_transfer_node():
 		get_parent().remove_child(self)
 		plate.add_cake(self)
 		# 调整本地坐标以适应新的父节点
-		position = plate.get_local_mouse_position() - size * 0.5
+		#position = plate.get_local_mouse_position() - size * 0.5
 		
 
 func _input(event):
