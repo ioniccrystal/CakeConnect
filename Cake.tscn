@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://dyul5j6bfjugu"]
+[gd_scene load_steps=3 format=3 uid="uid://dyul5j6bfjugu"]
 
 [ext_resource type="Script" path="res://Cake.gd" id="1_8616s"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_nuxvd"]
 
 [node name="Cake" type="Control"]
 custom_minimum_size = Vector2(50, 50)
@@ -19,6 +21,7 @@ color = Color(0.359269, 0.873895, 0.75558, 1)
 [node name="Area2D" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("RectangleShape2D_nuxvd")
 debug_color = Color(0.922421, 0.201833, 0.485053, 0.42)
 
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]

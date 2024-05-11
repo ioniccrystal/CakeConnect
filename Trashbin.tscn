@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3 uid="uid://bx6pj1ryhy241"]
+
+[ext_resource type="Texture2D" uid="uid://cmaufpke3lyyq" path="res://assets/trashbin.png" id="1_0k8us"]
+[ext_resource type="Script" path="res://Trashbin.gd" id="1_00thf"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_y80e1"]
+size = Vector2(254, 228)
+
+[node name="Trashbin" type="Area2D"]
+script = ExtResource("1_00thf")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_0k8us")
+region_enabled = true
+region_rect = Rect2(300, 55, 346, 412)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(20, -4)
+shape = SubResource("RectangleShape2D_y80e1")
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]

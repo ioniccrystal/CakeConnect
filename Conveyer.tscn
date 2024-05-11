@@ -1,19 +1,27 @@
-[gd_scene load_steps=3 format=3 uid="uid://cwoqea70yidlt"]
+[gd_scene load_steps=2 format=3 uid="uid://cwoqea70yidlt"]
 
 [ext_resource type="Script" path="res://Conveyer.gd" id="1_k4ghc"]
-[ext_resource type="Texture2D" uid="uid://cgprw4mtvpwkt" path="res://assets/conveyer_bg.png" id="2_l52ve"]
 
-[node name="Conveyer" type="Control"]
-layout_mode = 3
-anchors_preset = 0
+[node name="Conveyer" type="HBoxContainer"]
+layout_direction = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 1152.0
+offset_bottom = -648.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 145
+alignment = 2
 script = ExtResource("1_k4ghc")
 
-[node name="NinePatchRect" type="NinePatchRect" parent="."]
-layout_mode = 0
-texture = ExtResource("2_l52ve")
-region_rect = Rect2(240.093, 299.604, 956.97, 1070.9)
+[node name="CakeContainer" type="Control" parent="."]
+visible = false
+layout_mode = 2
 
-[node name="CakeContainer" type="HBoxContainer" parent="."]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="Timer2" type="Timer" parent="."]
+wait_time = 4.0
+autostart = true
+
+[connection signal="child_entered_tree" from="." to="." method="_on_child_entered_tree"]
+[connection signal="timeout" from="Timer2" to="." method="_on_timer_2_timeout"]
