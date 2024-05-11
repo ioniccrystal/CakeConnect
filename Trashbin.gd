@@ -8,5 +8,5 @@ func _ready():
 	connect("cake_in_trashbin",Callable(HUD,"change_heart"))
 	
 
-func _on_area_entered(area):
+func _on_area_entered(_area):
 	emit_signal("cake_in_trashbin")

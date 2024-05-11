@@ -18,10 +18,6 @@ func cake_generate():
 func _on_timer_1_timeout():
 	cake_generate()
 
-	
-
-
-
 #func init_cake():
 	#var cake1 = cake_scene.instantiate()
 	#conveyer.add_cake(cake1)

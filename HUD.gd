@@ -11,6 +11,7 @@ func _ready():
 	
 func update_heart_num():
 	heart.update_heart(current_heart)
+	print(current_heart)
 	pass
 	
 func change_heart():

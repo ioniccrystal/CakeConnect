@@ -34,14 +34,14 @@ var shape_points: Dictionary = {
 }
 
 
-
 var highlight_material = preload("res://assets/cake_highlight_border.tres")
 @onready var collision_shape_2d = $Area2D/CollisionShape2D
 @onready var polygon_2d = $Polygon2D
 @onready var area_2d = $Area2D
 @onready var trashbin:Area2D = get_node("/root/Main/Background/MarginContainer/Trashbin")
+@onready var plate_area:Area2D = get_node("/root/Main/Background/MarginContainer/VBoxContainer/Plate/Area2D")
+@onready var conveyer = get_node("/root/Main/Background/MarginContainer/VBoxContainer/Conveyer")
 
-# Called when the node enters the scene tree for the first time.
 func _ready():
 	set_mouse_filter(MOUSE_FILTER_STOP)
 	set_focus_mode(Control.FOCUS_CLICK)
@@ -225,5 +225,10 @@ func get_global_vertices(polygon):
 func _on_area_2d_area_entered(area):
 	if area == trashbin:
 		hide()
+		get_parent().get_parent().temporary_cake_containers.erase(get_parent())
+		#emit_signal("out_array")
 		get_parent().queue_free()
+	if area == plate_area and get_parent()==conveyer:
+		reparent(get_node("/root/Main/Background/MarginContainer/VBoxContainer/Plate"))
+		pass
 

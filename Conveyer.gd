@@ -18,10 +18,13 @@ func add_cake(cake):
 	add_child(new_container)
 	new_container.add_child(cake)
 	cakes_on_conveyer.append(cake)
+	for container in temporary_cake_containers:
+		if container.get_child_count()==0:
+			temporary_cake_containers.erase(container)
+			container.call_deferred("free")
 
 
 func _on_child_entered_tree(node):
 	var new_position = Vector2(60,0)
 	var tween = get_tree().create_tween()
 	tween.tween_property(self,"position",new_position,0.4)
-
