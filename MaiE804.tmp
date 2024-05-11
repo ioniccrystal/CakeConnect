@@ -58,10 +58,9 @@ size_flags_stretch_ratio = 4.0
 script = ExtResource("7_gj2bs")
 
 [node name="Heart" parent="HUD" instance=ExtResource("6_f86pl")]
-offset_left = 828.0
-offset_top = 96.0
-offset_right = 3858.0
-offset_bottom = 739.0
-scale = Vector2(0.1, 0.1)
+offset_left = 839.0
+offset_top = 85.0
+offset_right = 1634.0
+offset_bottom = 230.0
 
 [connection signal="timeout" from="Background/MarginContainer/VBoxContainer/Conveyer/Timer1" to="." method="_on_timer_1_timeout"]

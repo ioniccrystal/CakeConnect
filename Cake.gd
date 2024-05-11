@@ -14,8 +14,11 @@ var container_position: Vector2 = Vector2.ZERO
 var container_size: Vector2 = Vector2.ZERO
 var rotation_speed = PI/6 # 根据蛋糕形状确定
 var plate = null
+var shape_values:Array = [Shape.SQUARE,Shape.TRIANGLE,Shape.DIAMOND]
+var random_index = randi()%3
+var random_shape_value = shape_values[random_index]
 
-var shape_points = {
+var shape_points: Dictionary = {
 	Shape.SQUARE: [Vector2(0, 0), Vector2(50, 0), Vector2(50, 50), Vector2(0, 50)],
 	Shape.TRIANGLE: [
 		Vector2(25, 0),
@@ -29,9 +32,14 @@ var shape_points = {
 		Vector2(0, 43.3)
 	]
 }
+
+
+
 var highlight_material = preload("res://assets/cake_highlight_border.tres")
 @onready var collision_shape_2d = $Area2D/CollisionShape2D
 @onready var polygon_2d = $Polygon2D
+@onready var area_2d = $Area2D
+@onready var trashbin:Area2D = get_node("/root/Main/Background/MarginContainer/Trashbin")
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -40,6 +48,7 @@ func _ready():
 	plate = get_node_or_null("/root/Main/Background/MarginContainer/VBoxContainer/Plate") as Plate  # 根据你的场景树结构修改路径
 	#update_collision_shape()
 	connect("resized", Callable(self, "update_collision_shape"))
+
 
 func set_shape(shape_key):
 	shape = shape_key
@@ -52,7 +61,7 @@ func set_shape(shape_key):
 	var shape2D = ConvexPolygonShape2D.new()
 	shape2D.set_point_cloud(points)
 	collision_shape_2d.shape = shape2D
-	collision_shape_2d.position = collision_shape_2d.position
+	#collision_shape_2d.position = collision_shape_2d.position
 	#rotation_speed = PI / 2 if shape_key == "square" else PI / 3
 
 func in_plate():
@@ -76,6 +85,7 @@ func update_collision_shape():
 	if shape2D and shape2D is RectangleShape2D:
 		# 设置碰撞形状的尺寸匹配PanelContainer的尺寸
 		shape2D.extents = size / 2
+	
 
 func _process(_delta):
 	if status == Status.DRAGGING:
@@ -94,7 +104,7 @@ func _process(_delta):
 func _on_gui_input(event):
 	if event is InputEventMouseButton:
 		if event.button_index == 1:
-			print(event.button_mask)
+			#print(event.button_mask)
 			if event.button_mask == 1: # and status == Status.IDLE
 				status = Status.DRAGGING
 				z_index = 100
@@ -210,3 +220,10 @@ func get_global_vertices(polygon):
 	for vertex in polygon.polygon:
 		global_vertices.append(polygon.global_transform.origin + polygon.global_transform.basis_xform(vertex))
 	return global_vertices
+
+
+func _on_area_2d_area_entered(area):
+	if area == trashbin:
+		hide()
+		get_parent().queue_free()
+
