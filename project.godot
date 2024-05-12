@@ -15,6 +15,12 @@ run/main_scene="res://Main.tscn"
 config/features=PackedStringArray("4.2", "Mobile")
 config/icon="res://icon.svg"
 
+[layer_names]
+
+2d_physics/layer_1="通用"
+2d_physics/layer_2="在拖拽"
+2d_physics/layer_3="角点"
+
 [rendering]
 
 renderer/rendering_method="mobile"

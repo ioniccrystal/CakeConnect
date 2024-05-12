@@ -1,29 +1,35 @@
 extends Control
 class_name Conveyer
 
-var cakes_on_conveyer = []
-@onready var container = $CakeContainer
+var cake_scene = preload("res://Cake.tscn")
+
+@onready var area_2d = $Area2D
+@onready var collision_shape_2d = $Area2D/CollisionShape2D
+@onready var cake_container = $CakeContainer
+@onready var main = get_node_or_null("/root/Main/")
 
 func _ready():
-	connect("resized", Callable(self, "update_collision_shape"))
+	_resize()
 
 
-func add_cake(cake):
-	add_child(cake)
-	cakes_on_conveyer.append(cake)
-	for container in temporary_cake_containers:
-		if container.get_child_count()==0:
-			temporary_cake_containers.erase(container)
-			container.call_deferred("free")
+func _resize():
+	collision_shape_2d.global_position = global_position + size/2
+	collision_shape_2d.shape.size = size
 
-func _on_child_entered_tree(node):
-	if node.is_in_group("cake"):
-		for cake in cakes_on_conveyer:
-			var new_position = Vector2(100,0)
-			cake.move_and_collide(new_position)
 
-=======
-	var new_position = Vector2(60,0)
-	var tween = get_tree().create_tween()
-	tween.tween_property(self,"position",new_position,0.4)
->>>>>>> .merge_file_YUk9rG
+func _on_resized():
+	if collision_shape_2d:
+		_resize()
+
+
+func add_cake():
+	for oldcake in cake_container.get_children():
+		if oldcake.status != oldcake.Status.DRAGGING:
+			var new_position = Vector2(145,0)
+			oldcake.move_and_collide(new_position)
+			await get_tree().create_timer(0.05).timeout
+	#延时一秒再放下新蛋糕
+	await get_tree().create_timer(1.0).timeout
+	var cake = cake_scene.instantiate()
+	cake_container.add_child(cake)
+	cake.set_shape(cake.random_shape_value)

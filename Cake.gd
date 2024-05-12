@@ -1,6 +1,6 @@
-extends Control
-class_name  Cake
-
+extends RigidBody2D
+class_name Cake
+#zhufree的部分
 enum Status {
 	FIXED, DRAGGING, IDLE
 }
@@ -14,11 +14,8 @@ var container_position: Vector2 = Vector2.ZERO
 var container_size: Vector2 = Vector2.ZERO
 var rotation_speed = PI/6 # 根据蛋糕形状确定
 var plate = null
-var shape_values:Array = [Shape.SQUARE,Shape.TRIANGLE,Shape.DIAMOND]
-var random_index = randi()%3
-var random_shape_value = shape_values[random_index]
 
-var shape_points: Dictionary = {
+var shape_points = {
 	Shape.SQUARE: [Vector2(0, 0), Vector2(50, 0), Vector2(50, 50), Vector2(0, 50)],
 	Shape.TRIANGLE: [
 		Vector2(25, 0),
@@ -33,113 +30,109 @@ var shape_points: Dictionary = {
 	]
 }
 
+#ionic的部分
+var points = []
+var cake_bottom = []
+@onready var HUD = get_node("/root/Main/HUD")
+var point_area = preload("res://PointArea.tscn")
+var point_areas = []
+var shape_points_angle = {
+	Shape.SQUARE: [90,90,90,90],
+	Shape.TRIANGLE: [60,60,60],
+	Shape.DIAMOND: [60,120,60,120]
+	}
 
-var highlight_material = preload("res://assets/cake_highlight_border.tres")
-@onready var collision_shape_2d = $Area2D/CollisionShape2D
-@onready var polygon_2d = $Polygon2D
-@onready var area_2d = $Area2D
-@onready var trashbin:Area2D = get_node("/root/Main/Background/MarginContainer/Trashbin")
-@onready var plate_area:Area2D = get_node("/root/Main/Background/MarginContainer/VBoxContainer/Plate/Area2D")
-@onready var conveyer = get_node("/root/Main/Background/MarginContainer/VBoxContainer/Conveyer")
+#瓜的部分
+var shape_values:Array = [Shape.SQUARE,Shape.TRIANGLE,Shape.DIAMOND]
+var random_index = randi()%3
+var random_shape_value = shape_values[random_index]
+
+#var highlight_material = preload("res://assets/cake_highlight_border.tres")
+@onready var collision_shape_2d = find_child("CollisionShape2D")
+@onready var polygon_2d = find_child("Polygon2D")
+
 
 func _ready():
-	set_mouse_filter(MOUSE_FILTER_STOP)
-	set_focus_mode(Control.FOCUS_CLICK)
-	plate = get_node_or_null("/root/Main/Background/MarginContainer/VBoxContainer/Plate") as Plate  # 根据你的场景树结构修改路径
-	#update_collision_shape()
-	connect("resized", Callable(self, "update_collision_shape"))
-
+	plate = get_node_or_null("/root/Main/MarginContainer/VBoxContainer/Plate") as Plate  # 根据你的场景树结构修改路径
 
 func set_shape(shape_key):
 	shape = shape_key
-	var points = shape_points[shape_key]
-	polygon_2d.polygon = points
-	if shape_key == Shape.DIAMOND:
-		size = Vector2(50, 100)
-	else:
-		size = Vector2(50, 50)
+	points = shape_points[shape_key]
+	#找质心
+	var centroid = Vector2()
+	for point in points:
+		centroid += point
+	centroid /= points.size()
+	var new_points = []
+	for point in points:
+		point = point - centroid
+		new_points.append(point)
+	points = new_points
 	var shape2D = ConvexPolygonShape2D.new()
+	polygon_2d.polygon = points
 	shape2D.set_point_cloud(points)
 	collision_shape_2d.shape = shape2D
-	#collision_shape_2d.position = collision_shape_2d.position
-	#rotation_speed = PI / 2 if shape_key == "square" else PI / 3
+	collision_shape_2d.position = collision_shape_2d.position
+	#做蛋糕层
+	_make_cake()
+	#给每个点贴上标签
+	_set_point_areas()
+	
 
 func in_plate():
 	return get_parent().get_parent() is Plate
 
 func draw_outline(color):
-	var full_points = shape_points[shape].duplicate()
-	full_points.append(shape_points[shape][0])
-	draw_polyline(full_points, color, 2.0)
+	var full_points = points.duplicate()
+	full_points.append(points[0])
+	draw_polyline(full_points, color, 4.0)
 	
 func _draw():
 	if status == Status.DRAGGING:
 		draw_outline(Color.GREEN)
 	elif status == Status.IDLE:
-		draw_outline(Color.BLUE)
+		draw_outline(Color.WHITE)
 	else:
 		draw_outline(Color.TRANSPARENT)
-		
-func update_collision_shape():
-	var shape2D = collision_shape_2d.shape
-	if shape2D and shape2D is RectangleShape2D:
-		# 设置碰撞形状的尺寸匹配PanelContainer的尺寸
-		shape2D.extents = size / 2
-	
 
-func _process(_delta):
+func _physics_process(_delta):
 	if status == Status.DRAGGING:
-		container_position = get_parent().global_position
-		container_size = get_parent().size
-		# 限定不超出盘子范围
 		var mouse_pos = get_global_mouse_position()
-		var new_position = mouse_pos - size * 0.5
-		if get_parent().get_parent() is Plate:
-			new_position.x = clamp(new_position.x, container_position.x, container_position.x + container_size.x - size.x)
-			new_position.y = clamp(new_position.y, container_position.y, container_position.y + container_size.y - size.y)
-		global_position = new_position
-		
-
-
-func _on_gui_input(event):
-	if event is InputEventMouseButton:
-		if event.button_index == 1:
-			#print(event.button_mask)
-			if event.button_mask == 1: # and status == Status.IDLE
-				status = Status.DRAGGING
-				z_index = 100
-				queue_redraw()
-			elif event.button_mask == 0 and status == Status.DRAGGING:
-				if not in_plate():
-					try_to_transfer_node()
-				check_snap()
-				snap()
-				status = Status.FIXED
-				queue_redraw()
-		elif status == Status.DRAGGING \
-			and event.button_index == MOUSE_BUTTON_WHEEL_UP or event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			# 处理鼠标滚轮旋转
-			var rotate_dir = -1 if event.button_index == MOUSE_BUTTON_WHEEL_UP else 1
-			start_rotate(rotate_dir)
+		var velocity = mouse_pos - global_position
+		move_and_collide(velocity)
+	for i in cake_bottom.size():
+		cake_bottom[i].global_position = polygon_2d.global_position + Vector2(0,(i+1)*2)
 
 func try_to_transfer_node():
-	var mouse_pos = get_global_mouse_position()
-	if plate and plate.get_rect().has_point(mouse_pos):
+	if plate.area_2d.overlaps_body(self):
+		var old_global = global_position
 		get_parent().remove_child(self)
 		plate.add_cake(self)
 		# 调整本地坐标以适应新的父节点
-		position = plate.get_local_mouse_position() - size * 0.5
-		
-
-func _input(event):
-	if event is InputEventKey and status == Status.DRAGGING:
-		if event.pressed:
-			if event.keycode == KEY_A:
-				start_rotate(-1)
-			elif event.keycode == KEY_D:
-				start_rotate(1)
+		global_position = old_global
+	else:#扔下去了扣分
+		cake_fade_out()
+		HUD.change_heart()
 
 
+func cake_fade_out():
+	var tween = create_tween()
+	tween.set_parallel()
+	tween.tween_property(self,"modulate",Color.TRANSPARENT,0.2)
+	tween.tween_property(self,"scale",Vector2(0.5,0.5),0.2)
+	await tween.finished
+	queue_free()
+
+#ionic：感觉滚轮已经很方便了这个要不就算了
+#func _input(event):
+	#if event is InputEventKey and status == Status.DRAGGING:
+		#if event.pressed:
+			#if event.keycode == KEY_A:
+				#start_rotate(-1)
+			#elif event.keycode == KEY_D:
+				#start_rotate(1)
+
+#zhufree旋转代码
 func start_rotate(rotate_dir):
 	if not rotating:
 		var end_rotation =  rotation + rotate_dir * rotation_speed
@@ -155,12 +148,13 @@ var snap_distance = 20.0  # 吸附距离阈值
 var min_distance = INF
 var best_match = null
 
+#zhufree贴贴代码
 func check_snap():
 	if status == Status.DRAGGING:
 		min_distance = INF
 		best_match = null
 		# 获取盘子上所有蛋糕
-		var cakes = plate.cakes_on_plate
+		var cakes = plate.cake_container.get_children()
 		for cake in cakes:
 			# 获取其他蛋糕和当前蛋糕的polygon
 			if cake == self:
@@ -188,7 +182,7 @@ func check_snap():
 						min_distance = distance
 						best_match = [seg1_from, seg1_to, seg2_from, seg2_to]
 
-
+#zhufree贴贴代码
 func snap():
 	print('try snap,min_distance = ', min_distance)
 	if min_distance <= snap_distance:
@@ -205,7 +199,7 @@ func snap():
 		else:
 			## 方向相反,移动使线段1的端点与线段2的另一端点重合
 			move_direction = segment1[0]- segment2[1]
-		position += move_direction
+		move_and_collide(move_direction)
 
 
 # 计算两个向量的外积
@@ -222,13 +216,81 @@ func get_global_vertices(polygon):
 	return global_vertices
 
 
-func _on_area_2d_area_entered(area):
-	if area == trashbin:
-		hide()
-		get_parent().get_parent().temporary_cake_containers.erase(get_parent())
-		#emit_signal("out_array")
-		get_parent().queue_free()
-	if area == plate_area and get_parent()==conveyer:
-		reparent(get_node("/root/Main/Background/MarginContainer/VBoxContainer/Plate"))
-		pass
+#这里只管旋转了
+func _on_input_event(_viewport, event, _shape_idx):
+	if event is InputEventMouseButton :
+		#print("moving " + str(self))
+		if status == Status.DRAGGING and event.button_index == MOUSE_BUTTON_WHEEL_UP:
+			# 处理鼠标滚轮旋转
+			start_rotate(-1)
+		if status == Status.DRAGGING and event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			start_rotate(1)
 
+
+#ionic被鼠标传递整不会了！贴了个按钮在上面！
+func _on_texture_button_button_down():
+	if status != Status.FIXED:
+		status = Status.DRAGGING
+		#改碰撞层
+		set_collision_layer_value(1,false)
+		set_collision_layer_value(2,true)
+		#显示在最前
+		z_index = 100
+
+
+func _on_texture_button_button_up():
+	if status == Status.DRAGGING:
+		#回到原来的碰撞层
+		set_collision_layer_value(2,false)
+		set_collision_layer_value(1,true)
+		try_to_transfer_node()
+		check_snap()
+		snap()
+		status = Status.FIXED
+		#不许再动了
+		freeze = true
+		$TextureButton.disabled = true
+		ask_points()
+
+#ionic蛋糕层效果
+func _make_cake():
+	for i in range(9):
+		var new_polygon = polygon_2d.duplicate()
+		add_child(new_polygon)
+		new_polygon.global_position = polygon_2d.global_position + Vector2(0,(i+1)*2)
+		new_polygon.color = Color.PINK
+		if i > 3 and i < 6:
+			new_polygon.color = Color.ROSY_BROWN
+		new_polygon.z_index = - (i + 1)
+		cake_bottom.append(new_polygon)
+	queue_redraw()
+
+#ionic贴角点标签
+func _set_point_areas():
+	for n in points.size():
+		var new_point_area = point_area.instantiate()
+		add_child(new_point_area)
+		new_point_area.position = points[n]
+		new_point_area.angle = shape_points_angle[shape][n]
+		point_areas.append(new_point_area)
+
+#ionic问问角点有没有360的
+func ask_points():
+	await get_tree().create_timer(0.1).timeout
+	#这步写的很不好，我知道要等它在盘子上加载完，但不知道应该用什么信号判断
+	#盘子的add_child也需要再_ready()一次吗？好像又不需要。不懂了摆了，用个秒表延时一点算了
+	var connected_points = []
+	var score = 0
+	var times = 0
+	for area in point_areas:
+		var angle_sum = area.angle
+		print(area.point_together)
+		for point in area.point_together:
+			angle_sum += point.angle
+			score += 100
+		if angle_sum == 360 :#如果满足360度
+			connected_points.append(area)#把这个点存入connected
+			area.set_label("x"+str(connected_points.size()))
+			times = connected_points.size()
+	score *= times
+	HUD.change_score(score)

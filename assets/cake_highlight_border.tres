@@ -1,6 +1,0 @@
-[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://b1f5mnuaoltj3"]
-
-[ext_resource type="Shader" path="res://assets/Cake.gdshader" id="1_ti4wo"]
-
-[resource]
-shader = ExtResource("1_ti4wo")

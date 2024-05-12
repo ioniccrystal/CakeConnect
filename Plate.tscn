@@ -1,37 +1,61 @@
 [gd_scene load_steps=4 format=3 uid="uid://cebuqlh4ennog"]
 
 [ext_resource type="Script" path="res://Plate.gd" id="1_hl0ua"]
-[ext_resource type="Texture2D" uid="uid://wn7tpgqo3gld" path="res://assets/yellow_panel.png" id="2_ddcgr"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a7a6j"]
+bg_color = Color(0.99, 0.779625, 0.4851, 1)
+border_width_left = 10
+border_width_top = 10
+border_width_right = 10
+border_width_bottom = 10
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+expand_margin_left = 5.0
+expand_margin_top = 5.0
+expand_margin_right = 5.0
+expand_margin_bottom = 5.0
+shadow_size = 1
+shadow_offset = Vector2(0, 10)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_es0da"]
-size = Vector2(4.40625, 5)
 
 [node name="Plate" type="Control"]
 layout_mode = 3
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
 script = ExtResource("1_hl0ua")
 
-[node name="NinePatchRect" type="NinePatchRect" parent="."]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-texture = ExtResource("2_ddcgr")
-region_rect = Rect2(5.8934, 5.51482, 89.5353, 89.5353)
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_a7a6j")
 
 [node name="CakeContainer" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 1
 
 [node name="Area2D" type="Area2D" parent="."]
+collision_mask = 3
 input_pickable = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource("RectangleShape2D_es0da")
+
+[connection signal="resized" from="." to="." method="_on_resized"]
