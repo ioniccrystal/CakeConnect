@@ -8,7 +8,7 @@ class_name Plate
 @onready var panel = $Panel
 
 func _ready():
-	_resize()
+	pass
 
 
 func _on_resized():
@@ -18,7 +18,8 @@ func _on_resized():
 
 func _resize():
 	collision_shape_2d.global_position = global_position + size/2
-	collision_shape_2d.shape.size = size
+	if size > Vector2(50,50):
+		collision_shape_2d.shape.size = size - Vector2(50,50)
 
 
 func add_cake(cake):

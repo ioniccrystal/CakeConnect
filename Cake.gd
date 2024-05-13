@@ -10,8 +10,8 @@ enum Shape {
 var status = Status.IDLE
 var shape = Shape.SQUARE
 var rotating = false
-var container_position: Vector2 = Vector2.ZERO
-var container_size: Vector2 = Vector2.ZERO
+#var container_position: Vector2 = Vector2.ZERO
+#var container_size: Vector2 = Vector2.ZERO
 var rotation_speed = PI/6 # 根据蛋糕形状确定
 var plate = null
 
@@ -59,7 +59,7 @@ func set_shape(shape_key):
 	shape = shape_key
 	points = shape_points[shape_key]
 	#找质心
-	var centroid = Vector2()
+	var centroid = Vector2(0,0)
 	for point in points:
 		centroid += point
 	centroid /= points.size()
@@ -73,6 +73,7 @@ func set_shape(shape_key):
 	shape2D.set_point_cloud(points)
 	collision_shape_2d.shape = shape2D
 	collision_shape_2d.position = collision_shape_2d.position
+	collision_shape_2d.scale = Vector2(0.98,0.98)#稍微小一点不然挤不进去
 	#做蛋糕层
 	_make_cake()
 	#给每个点贴上标签
@@ -243,13 +244,16 @@ func _on_texture_button_button_up():
 		#回到原来的碰撞层
 		set_collision_layer_value(2,false)
 		set_collision_layer_value(1,true)
+		#放到盘子上
 		try_to_transfer_node()
+		#贴贴
 		check_snap()
 		snap()
 		status = Status.FIXED
 		#不许再动了
 		freeze = true
 		$TextureButton.disabled = true
+		#问问有没有点满足360度
 		ask_points()
 
 #ionic蛋糕层效果
@@ -281,16 +285,26 @@ func ask_points():
 	#盘子的add_child也需要再_ready()一次吗？好像又不需要。不懂了摆了，用个秒表延时一点算了
 	var connected_points = []
 	var score = 0
-	var times = 0
+	var times = 0#如果一个要消除的点没有，倍率就是0
+	#遍历每个点
 	for area in point_areas:
 		var angle_sum = area.angle
 		print(area.point_together)
 		for point in area.point_together:
 			angle_sum += point.angle
-			score += 100
 		if angle_sum == 360 :#如果满足360度
 			connected_points.append(area)#把这个点存入connected
 			area.set_label("x"+str(connected_points.size()))
-			times = connected_points.size()
+	await get_tree().create_timer(0.3).timeout#略等一下动画
+	#消除，并计算消除了多少个块
+	if connected_points != []:
+		times = connected_points.size()#计算倍数
+		for point in connected_points:
+			for point_together in point.point_together:#遍历需要消除的点相邻的点
+				score += 100
+				point_together.cake.cake_fade_out()
+		score += 100 #自己也需要消除
+		cake_fade_out()
+	#总得分
 	score *= times
 	HUD.change_score(score)
